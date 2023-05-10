@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS= -I ./unity/src/ -I ./include/
+CFLAGS= -I ./unity/src/ -I ./include/ -fms-extensions
 SRC_DIRS = ./src
 
 sources := $(wildcard $(SRC_DIRS)/*.c)
