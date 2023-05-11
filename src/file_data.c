@@ -11,7 +11,7 @@ void get_username_from_uid(int uid, char *username)
     struct passwd *pws;
     pws = getpwuid(uid);
 
-    strcpy(username, pws->pw_name);
+    strncpy(username, pws->pw_name, 256);
 }
 
 void get_groupname_from_gid(int gid, char *groupname)
@@ -19,7 +19,7 @@ void get_groupname_from_gid(int gid, char *groupname)
     struct group *grp;
     grp = getgrgid(gid);
 
-    strcpy(groupname, grp->gr_name);
+    strncpy(groupname, grp->gr_name, 256);
 }
 
 void construct_permission_str(mode_t mode, char *permission)
