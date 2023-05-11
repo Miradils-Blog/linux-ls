@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     {
         lstat(file->d_name, (struct stat *)&files[i]);
 
-        strcpy(files[i].name, file->d_name);
+        strncpy(files[i].name, 256, file->d_name);
         get_username_from_uid(files[i].st_uid, files[i].owner_name);
         get_groupname_from_gid(files[i].st_gid, files[i].group_name);
         construct_permission_str(files[i].st_mode, files[i].permission);
