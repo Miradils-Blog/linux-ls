@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <dirent.h>
-#include <options.h>
+#include <parser.h>
 #include <file_data.h>
 #include <unistd.h>
 #include <string.h>
