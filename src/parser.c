@@ -122,8 +122,8 @@ void parse_flags(char *flags[], int count, options_t *options)
     if (options->sort_by == BY_MODIFICATION_TIME)
         // Little hack: The orders in enums are the same, so we can use math
         options->sort_by += options->ll_settings.show_timestamp;
-    else if (options->print_style != LIST_FORMAT && !options->sort_by && !options->ll_settings.show_timestamp)
+    else if (options->print_style != LIST_FORMAT && !options->sort_by && options->ll_settings.show_timestamp)
         // In non-list view, if show timestamp is not MODIFICATION_TIMESTAMP, it means
-        // -u or -c is set, so, if there is no other sort option, they become our sort option
+        // -u or -c is set, and if there is no other sort option, they become our sort option
         options->sort_by = BY_MODIFICATION_TIME + options->ll_settings.show_timestamp;
 }
