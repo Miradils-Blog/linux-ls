@@ -1,5 +1,5 @@
-#ifndef _OPTIONS_H
-#define _OPTIONS_H
+#ifndef _PARSER_H
+#define _PARSER_H
 
 #include <stdbool.h>
 
@@ -67,4 +67,4 @@ typedef struct
 // Function Prototypes
 void parse_flags(char *flags[], int count, options_t *options);
 
-#endif // _OPTIONS_H
+#endif // _PARSER_H

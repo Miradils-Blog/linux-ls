@@ -79,8 +79,6 @@ void test_tflu(void)
 
 void test_lctf(void)
 {
-    int a = -123;
-    printf("%d", DIGIT_COUNT(a));
     // -f overrides everything
     parse_flags((char *[]){"-lctf"}, 1, &options);
 

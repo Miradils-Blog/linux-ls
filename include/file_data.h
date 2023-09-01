@@ -1,5 +1,5 @@
-#ifndef _FILE_H
-#define _FILE_H
+#ifndef _FILE_DATA_H
+#define _FILE_DATA_H
 
 #include <time.h>
 #include <sys/types.h>
@@ -36,4 +36,4 @@ void get_file_extension(char *file_name, char *extension);
 void get_color(char* permission, char *extension, char *color);
 char get_indicator(char* permission);
 
-#endif // _FILE_H
+#endif // _FILE_DATA_H
