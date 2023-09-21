@@ -1,8 +1,8 @@
 #ifndef _LS_H
 #define _LS_H
 
-#define max(a,b) (((a)>(b))?(a):(b))
-#define NUM_LEN(n) (snprintf(0,0,"%+d",(n)) - 1)
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define NUM_LEN(n) (snprintf(0, 0, "%+d", (n)) - 1)
 
 typedef struct
 {
@@ -14,6 +14,8 @@ typedef struct
     int groupname_width;
     int groupid_width;
     int block_width;
+    int size_width;
+    int total_blocks;
 } widths_t;
 
 #endif // _LS_H

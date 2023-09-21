@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/ioctl.h>
+#include <sys/sysmacros.h>
 
 int get_window_width()
 {
@@ -15,22 +16,36 @@ int get_window_width()
     return w.ws_col;
 }
 
-int main(int argc, char *argv[])
+void update_widths(widths_t *widths, file_info *file)
 {
+    widths->inode_width = max(widths->inode_width, NUM_LEN(file->st_ino));
+    widths->block_width = max(widths->block_width, NUM_LEN(file->st_size));
+    widths->nlink_width = max(widths->inode_width, NUM_LEN(file->st_nlink));
+    widths->ownerid_width = max(widths->ownerid_width, NUM_LEN(file->st_uid));
+    widths->ownername_width = max(widths->ownername_width, strlen(file->owner_name));
+    widths->groupid_width = max(widths->groupid_width, NUM_LEN(file->st_gid));
+    widths->groupname_width = max(widths->groupname_width, strlen(file->group_name));
 
+    int size_width = NUM_LEN(file->st_size);
+    if (S_ISCHR(file->st_mode) || S_ISBLK(file->st_mode))
+        size_width = NUM_LEN(major(file->st_rdev)) + NUM_LEN(minor(file->st_rdev)) + 2; // major, minor
+
+    widths->size_width = max(widths->size_width, size_width);
+    widths->total_blocks += file->st_blocks;
+}
+
+int get_file_data_from_dir(char *directory, file_info *files, widths_t *widths)
+{
     DIR *dir;            // for reading directory
     struct dirent *file; // struct for getting file data
-    file_info files[256];  // For now static array
-    widths_t widths;
-    widths.window_width = get_window_width();
-    
-    chdir("folder");
+
+    chdir(directory);
     dir = opendir(".");
     int i = 0;
 
     while ((file = readdir(dir)) != NULL)
     {
-        lstat(file->d_name, (struct stat *)&files[i]);
+        stat(file->d_name, (struct stat *)&files[i]);
 
         strncpy(files[i].name, file->d_name, 256);
         get_username_from_uid(files[i].st_uid, files[i].owner_name);
@@ -40,28 +55,35 @@ int main(int argc, char *argv[])
         get_color(files[i].permission, files[i].extension, files[i].color);
 
         files[i].indicator = get_indicator(files[i].permission);
-        
-        widths.inode_width = max(widths.inode_width, NUM_LEN(files[i].st_ino));
-        widths.nlink_width = max(widths.inode_width, NUM_LEN(files[i].st_nlink));
-        widths.ownerid_width = max(widths.ownerid_width, NUM_LEN(files[i].st_uid));
-        widths.ownername_width = max(widths.ownername_width, strlen(files[i].owner_name));
-        widths.groupid_width = max(widths.groupid_width, NUM_LEN(files[i].st_gid));
-        widths.groupname_width = max(widths.groupname_width, strlen(files[i].group_name));
-        widths.block_width = max(widths.block_width, NUM_LEN(files[i].st_size));
-        
+        update_widths(widths, &files[i]);
+
         ++i;
     }
+
+    return i;
+}
+
+int main(int argc, char *argv[])
+{
+
+    file_info files[256]; // For now static array
+
+    widths_t widths;
+    memset(&widths, 0, sizeof(widths_t)); // initialize all value with 0
+    widths.window_width = get_window_width();
+
+    int num_of_files = get_file_data_from_dir("folder", files, &widths);
 
     char filetime[20];
     struct tm *timeinfo;
 
-    for (int j = 0; j < i; ++j)
+    for (int j = 0; j < num_of_files; ++j)
     {
         timeinfo = localtime(&files[j].st_mtime);
         strftime(filetime, 20, "%b %-2d %H:%M", timeinfo);
 
-        printf("%9d %5d %s %d %-8s %-7s %8d %s %s%s%s\n", files[j].st_ino, files[j].st_blocks / 2, files[j].permission, files[j].st_nlink, 
-                                                    files[j].owner_name, files[j].group_name, files[j].st_size, filetime, files[j].color, files[j].name, COLOR_RESET);
+        printf("%9d %5d %s %d %-8s %-7s %8d %s %s%s%s\n", files[j].st_ino, files[j].st_blocks / 2, files[j].permission, files[j].st_nlink,
+               files[j].owner_name, files[j].group_name, files[j].st_size, filetime, files[j].color, files[j].name, COLOR_RESET);
     }
 
     return 0;
