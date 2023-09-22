@@ -13,11 +13,11 @@ void tearDown(void)
 
 void test_ls_flags(void)
 {
-    TEST_IGNORE();  // until we fix our code, we will ignore this test unit
+    // TEST_IGNORE(); // until we fix our code, we will ignore this test unit
     FILE *pipe;
     system("make"); // run 'make' to generate executable
 
-    char *test_flags[] = {"-l", "-a", "-la"}; // list of flags to test
+    char *test_flags[] = {"-fmar", "-f1i", "-fl", "-fa", "-fla"}; // list of flags to test
     char error_msg[100];
     int flag_cnt = sizeof(test_flags) / sizeof(char *); // get the number of flags
 
@@ -29,7 +29,7 @@ void test_ls_flags(void)
     for (int i = 0; i < flag_cnt; ++i)
     {
         // Run original ls command and capture output
-        sprintf(command, "ls %s", test_flags[i]);
+        sprintf(command, "ls folder/ %s", test_flags[i]);
         pipe = popen(command, "r");
         fread(ls_output, 1, 1024, pipe);
         pclose(pipe);
@@ -41,7 +41,7 @@ void test_ls_flags(void)
         pclose(pipe);
 
         // Compare
-        sprintf(error_msg, "Failed flag: %s", test_flags[i]);
+        sprintf(error_msg, "\nFailed flag: %s", test_flags[i]);
         TEST_ASSERT_EQUAL_STRING_MESSAGE(ls_output, our_output, error_msg);
     }
 }

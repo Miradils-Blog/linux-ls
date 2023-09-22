@@ -5,7 +5,7 @@
 
 void init_options(options_t *options)
 {
-    memset(options, 0, sizeof(*options));  // Initialize all values to zero
+    memset(options, 0, sizeof(options_t)); // Initialize all values to zero
 
     options->ll_settings.show_owner = true;
     options->ll_settings.show_owner_group = true;
@@ -55,6 +55,7 @@ void parse_flags(char *flags[], int count, options_t *options)
                     options->ll_settings.show_owner = false;
                     options->ll_settings.show_extra_data = true;
                     options->print_style = LIST_FORMAT;
+                    options->show_total = true;
                     break;
                 case 'G':
                     options->ll_settings.show_owner_group = false;
@@ -68,6 +69,7 @@ void parse_flags(char *flags[], int count, options_t *options)
                 case 'l':
                     options->ll_settings.show_extra_data = true;
                     options->print_style = LIST_FORMAT;
+                    options->show_total = true;
                     break;
                 case 'm':
                     options->print_style = COMMA_SEPARATED_FORMAT;
@@ -76,6 +78,7 @@ void parse_flags(char *flags[], int count, options_t *options)
                     options->ll_settings.show_owner_ids = true;
                     options->ll_settings.show_extra_data = true;
                     options->print_style = LIST_FORMAT;
+                    options->show_total = true;
                     break;
                 case 'p':
                     options->append_directory_indicator = true;
@@ -101,9 +104,6 @@ void parse_flags(char *flags[], int count, options_t *options)
                 case 'U':
                     options->sort_by = NO_SORT;
                     break;
-                case 'x':
-                    options->print_style = ONE_LINE_FORMAT;
-                    break;
                 case 'X':
                     options->sort_by = BY_ALPHABETICAL_EXTENSION;
                     break;
@@ -111,13 +111,13 @@ void parse_flags(char *flags[], int count, options_t *options)
                     options->print_style = LIST_FORMAT;
                     break;
                 default:
-                    break;  
+                    break;
                 }
             }
         }
     }
 
-    // If active sort option is BY_MODIFICATION_TIME, meaning -t 
+    // If active sort option is BY_MODIFICATION_TIME, meaning -t
     // is set, check if -u or -c is also set, and change sorting accordingly.
     if (options->sort_by == BY_MODIFICATION_TIME)
         // Little hack: The orders in enums are the same, so we can use math

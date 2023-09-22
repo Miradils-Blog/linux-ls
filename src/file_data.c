@@ -25,18 +25,25 @@ void get_groupname_from_gid(int gid, char *groupname)
 void construct_permission_str(mode_t mode, char *permission)
 {
     // Get the first character from file type
-    if      (S_ISREG(mode)) permission[0] = '-';
-    else if (S_ISDIR(mode)) permission[0] = 'd';
-    else if (S_ISLNK(mode)) permission[0] = 'l';
-    else if (S_ISCHR(mode)) permission[0] = 'c';
-    else if (S_ISBLK(mode)) permission[0] = 'b';
-    else if (S_ISSOCK(mode)) permission[0] = 's';
-    else if (S_ISFIFO(mode)) permission[0] = 'p';
+    if (S_ISREG(mode))
+        permission[0] = '-';
+    else if (S_ISDIR(mode))
+        permission[0] = 'd';
+    else if (S_ISLNK(mode))
+        permission[0] = 'l';
+    else if (S_ISCHR(mode))
+        permission[0] = 'c';
+    else if (S_ISBLK(mode))
+        permission[0] = 'b';
+    else if (S_ISSOCK(mode))
+        permission[0] = 's';
+    else if (S_ISFIFO(mode))
+        permission[0] = 'p';
 
     permission[1] = (mode & S_IRUSR) ? 'r' : '-';
     permission[2] = (mode & S_IWUSR) ? 'w' : '-';
     permission[3] = (mode & S_IXUSR) ? 'x' : '-';
-    
+
     permission[4] = (mode & S_IRGRP) ? 'r' : '-';
     permission[5] = (mode & S_IWGRP) ? 'w' : '-';
     permission[6] = (mode & S_IXGRP) ? 'x' : '-';
@@ -44,13 +51,13 @@ void construct_permission_str(mode_t mode, char *permission)
     permission[7] = (mode & S_IROTH) ? 'r' : '-';
     permission[8] = (mode & S_IWOTH) ? 'w' : '-';
     permission[9] = (mode & S_IXOTH) ? 'x' : '-';
-    permission[10] = 0;  // terminator char, just in case
+    permission[10] = 0; // terminator char, just in case
 }
 
 void get_file_extension(char *file_name, char *extension)
 {
     char *p = strrchr(file_name, '.');
-    
+
     if (p)
         strcpy(extension, strrchr(file_name, '.'));
 }
@@ -60,7 +67,7 @@ static bool is_archive_file(char *extension)
     return (strstr(extension, ".tar") || strstr(extension, ".taz") || strstr(extension, ".xz") || strstr(extension, ".gz"));
 }
 
-void get_color(char* permission, char *extension, char *color)
+void get_color(char *permission, char *extension, char *color)
 {
     switch (permission[0])
     {
@@ -93,20 +100,19 @@ void get_color(char* permission, char *extension, char *color)
     }
 }
 
-
-char get_indicator(char* permission)
+char get_indicator(char *permission)
 {
     switch (permission[0])
     {
     case '-':
         if (permission[3] == 'x' || permission[6] == 'x' || permission[9] == 'x')
             return '*';
-        
-        return ' '; 
+
+        return ' ';
     case 'd':
         return '/';
     case 'l':
-        return '@';
+        return '@'; // Should be @, but my console never shows @ for links
     case 's':
         return '=';
     case 'p':

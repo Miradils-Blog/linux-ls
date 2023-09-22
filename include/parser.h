@@ -6,30 +6,27 @@
 typedef enum
 {
     TABULAR_FORMAT,         // -C (default)
-    LIST_FORMAT,            // -l, -1
+    LIST_FORMAT,            // -l, -1, -n, -g
     COMMA_SEPARATED_FORMAT, // -m
-    ONE_LINE_FORMAT,        // -x
 } print_style_t;
-
 
 typedef enum
 {
-    MODIFICATION_TIMESTAMP,  // mtime
-    CHANGE_TIMESTAMP,        // ctime
-    ACCESS_TIMESTAMP         // atime
+    MODIFICATION_TIMESTAMP, // mtime
+    CHANGE_TIMESTAMP,       // ctime
+    ACCESS_TIMESTAMP        // atime
 } time_attribute_t;
 
 typedef struct
 {
-    bool show_extra_data;  // -l, -g, -n
-    bool show_owner_ids;  // -n
-    bool show_owner;  // -g
-    bool show_owner_group;  // -G
+    bool show_extra_data;    // -l, -g, -n
+    bool show_owner_ids;     // -n
+    bool show_owner;         // -g
+    bool show_owner_group;   // -G
     bool show_readable_size; // -h
     time_attribute_t show_timestamp;
-    
-} long_list_settings_t;
 
+} long_list_settings_t;
 
 typedef enum
 {
@@ -46,16 +43,18 @@ typedef struct
 {
     print_style_t print_style;
     long_list_settings_t ll_settings;
-    
+
+    bool show_total;
+
     bool show_hidden_files;
     bool show_curr_prev_dirs;
-    
+
     bool colorful_output;
     bool show_directory_content;
-    
+
     bool append_file_indicators;
     bool append_directory_indicator;
-    
+
     bool show_inode;
     bool inside_quotes;
     bool recursive;
@@ -64,7 +63,21 @@ typedef struct
     bool reverse_sort;
 } options_t;
 
+typedef struct
+{
+    int window_width;
+    int inode_width;
+    int nlink_width;
+    int ownername_width;
+    int ownerid_width;
+    int groupname_width;
+    int groupid_width;
+    int size_width;
+    int total_blocks;
+} widths_t;
+
 // Function Prototypes
+void init_options(options_t *options);
 void parse_flags(char *flags[], int count, options_t *options);
 
 #endif // _PARSER_H
