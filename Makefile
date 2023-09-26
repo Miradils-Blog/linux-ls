@@ -6,9 +6,8 @@ TESTS_DIR = ./tests
 sources := $(wildcard $(SRC_DIRS)/*.c)
 tests := $(wildcard $(TESTS_DIR)/*.c)
 
-compile_and_run:
+compile:
 	$(CC) $(CFLAGS) -o ls $(sources)
-	./ls
 
 runtest:
 	for test in $(tests) ; do \

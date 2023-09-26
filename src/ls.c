@@ -62,6 +62,7 @@ int get_file_data_from_dir(char *directory, file_info *files, options_t *options
         lstat(file->d_name, (struct stat *)&files[i]);
 
         strncpy(files[i].name, file->d_name, 256);
+        remove_non_alnum_chars(files[i].name, files[i].alphanum_name);
         get_username_from_uid(files[i].st_uid, files[i].owner_name);
         get_groupname_from_gid(files[i].st_gid, files[i].group_name);
         construct_permission_str(files[i].st_mode, files[i].permission);
@@ -88,26 +89,22 @@ int main(int argc, char *argv[])
     memset(&widths, 0, sizeof(widths_t)); // initialize all value with 0
     widths.window_width = get_window_width();
 
+    char dir[256] = {0};
+    for (int i = 1; i < argc; ++i)
+        if (argv[i][0] != '-') // is not argument
+            strcpy(dir, argv[i]);
+
     options_t options;
     init_options(&options);
     parse_flags(argv, argc, &options);
 
-    int num_of_files = get_file_data_from_dir("folder", files, &options, &widths);
+    if (!dir[0])
+        dir[0] = '.';
+
+    int num_of_files = get_file_data_from_dir(dir, files, &options, &widths);
     sort(files, num_of_files, &options);
 
     print_ls(files, num_of_files, &options, &widths);
-
-    char filetime[20];
-    struct tm *timeinfo;
-
-    // for (int j = 0; j < num_of_files; ++j)
-    // {
-    //     timeinfo = localtime(&files[j].st_mtime);
-    //     strftime(filetime, 20, "%b %-2d %H:%M", timeinfo);
-
-    //     printf("%9d %5d %s %d %-8s %-7s %8d %s %s%s%s\n", files[j].st_ino, files[j].st_blocks / 2, files[j].permission, files[j].st_nlink,
-    //            files[j].owner_name, files[j].group_name, files[j].st_size, filetime, files[j].color, files[j].name, COLOR_RESET);
-    // }
 
     return 0;
 }

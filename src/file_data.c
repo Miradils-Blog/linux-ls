@@ -5,6 +5,17 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ctype.h>
+
+void remove_non_alnum_chars(char *name, char *alnumname)
+{
+    int len = strlen(name);
+    int j = 0;
+
+    for (int i = 0; i < len; ++i)
+        if (isalnum(name[i]))
+            alnumname[j++] = name[i];
+}
 
 void get_username_from_uid(int uid, char *username)
 {
@@ -108,7 +119,7 @@ char get_indicator(char *permission)
         if (permission[3] == 'x' || permission[6] == 'x' || permission[9] == 'x')
             return '*';
 
-        return ' ';
+        return 0;
     case 'd':
         return '/';
     case 'l':
@@ -118,6 +129,6 @@ char get_indicator(char *permission)
     case 'p':
         return '|';
     default:
-        return ' ';
+        return 0;
     }
 }

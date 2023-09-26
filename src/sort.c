@@ -2,19 +2,18 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 static int cmp_alphabetical_asc(const void *a, const void *b)
 {
-    char *name1 = ((file_info *)a)->name;
-    char *name2 = ((file_info *)b)->name;
+    char *name1 = ((file_info *)a)->alphanum_name;
+    char *name2 = ((file_info *)b)->alphanum_name;
 
-    while (*name1 == '.')
-        ++name1;
+    int len_cmp = strlen(((file_info *)a)->name) - strlen(((file_info *)b)->name);
+    if (strlen(name1) || strlen(name2))
+        len_cmp = -len_cmp;
 
-    while (*name2 == '.')
-        ++name2;
-
-    return strcasecmp(name1, name2) ?: (strlen(((file_info *)a)->name) - strlen(((file_info *)b)->name));
+    return strcasecmp(name1, name2) ?: len_cmp;
 }
 
 static int cmp_alphabetical_desc(const void *a, const void *b) { return -cmp_alphabetical_asc(a, b); }
@@ -27,27 +26,27 @@ static int cmp_alphabetical_ext_desc(const void *a, const void *b) { return -cmp
 
 static int cmp_atime_asc(const void *a, const void *b)
 {
-    return ((file_info *)a)->st_atime - ((file_info *)b)->st_atime;
+    return ((file_info *)b)->st_atime - ((file_info *)a)->st_atime;
 }
 static int cmp_atime_desc(const void *a, const void *b) { return -cmp_atime_asc(a, b); }
 
 static int cmp_ctime_asc(const void *a, const void *b)
 {
-    return ((file_info *)a)->st_ctime - ((file_info *)b)->st_ctime;
+    return ((file_info *)b)->st_ctime - ((file_info *)a)->st_ctime;
 }
 static int cmp_ctime_desc(const void *a, const void *b) { return -cmp_ctime_asc(a, b); }
 
 static int cmp_mtime_asc(const void *a, const void *b)
 {
-    return ((file_info *)a)->st_mtime - ((file_info *)b)->st_mtime;
+    return ((file_info *)b)->st_mtime - ((file_info *)a)->st_mtime;
 }
 static int cmp_mtime_desc(const void *a, const void *b) { return -cmp_mtime_asc(a, b); }
 
 static int cmp_size_asc(const void *a, const void *b)
 {
-    return ((file_info *)a)->st_size - ((file_info *)b)->st_size;
+    return ((file_info *)b)->st_size - ((file_info *)a)->st_size;
 }
-static int cmp_size_desc(const void *a, const void *b) { return -cmp_mtime_desc(a, b); }
+static int cmp_size_desc(const void *a, const void *b) { return -cmp_size_asc(a, b); }
 
 void sort(file_info *files, int count, options_t *options)
 {
