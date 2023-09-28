@@ -18,15 +18,19 @@ void test_ls_flags(void)
     FILE *pipe;
     system("make"); // run 'make' to generate executable
 
+    // list of flags to test
     char *test_flags[] = {
         "-mr",
         "-1i",
         "-l",
         "-A",
         "-lA",
-        "-gu",
+        "-gtu",
         "-qpu",
-    }; // list of flags to test
+        "-FQ",
+        "-i",
+    };
+    // list of original ls flags to have consistent output format
     char *original_ls_flags[] = {
         "--format=commas",
         "",
@@ -35,7 +39,8 @@ void test_ls_flags(void)
         "",
         "",
         "--format=across",
-        "",
+        "--format=across",
+        "--format=across",
     };
 
     char error_msg[100];

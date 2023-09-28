@@ -33,6 +33,7 @@ static void print_padded_name(file_info file, options_t *options, int pad)
         {
             len += sprintf(filename + len, "%s", COLOR_RESET);
             reset_color = false;
+            full_pad += strlen(COLOR_RESET);
         }
 
         len += sprintf(filename + len, "%s", file.color);
@@ -127,26 +128,25 @@ static void print_list(file_info *files, int count, options_t *options, widths_t
 
         print_name(files[i], options);
 
-        if (options->ll_settings.show_extra_data)
-            if (files[i].permission[0] == 'l')
-            {
-                printf(" -> ");
+        if (options->ll_settings.show_extra_data && files[i].permission[0] == 'l')
+        {
+            printf(" -> ");
 
-                int len;
-                char buff[256];
-                file_info linked_file;
+            int len;
+            char buff[256];
+            file_info linked_file;
 
-                len = readlink(files[i].name, buff, sizeof(buff));
-                strncpy(linked_file.name, buff, len);
-                linked_file.name[len] = 0;
+            len = readlink(files[i].name, buff, sizeof(buff));
+            strncpy(linked_file.name, buff, len);
+            linked_file.name[len] = 0;
 
-                stat(files[i].name, (struct stat *)&linked_file);
-                construct_permission_str(linked_file.st_mode, linked_file.permission);
-                get_color(linked_file.permission, linked_file.extension, linked_file.color);
-                linked_file.indicator = get_indicator(linked_file.permission);
+            stat(files[i].name, (struct stat *)&linked_file);
+            construct_permission_str(linked_file.st_mode, linked_file.permission);
+            get_color(linked_file.permission, linked_file.extension, linked_file.color);
+            linked_file.indicator = get_indicator(linked_file.permission);
 
-                print_name(linked_file, options);
-            }
+            print_name(linked_file, options);
+        }
 
         printf("\n");
     }
@@ -165,10 +165,11 @@ static void print_comma_sep(file_info *files, int count, options_t *options, wid
     printf("\n");
 }
 
-static int get_column_count(column_info *column_configs, file_info *files, int file_count, int line_length, bool quotes, bool ind)
+static int get_column_count(column_info *column_configs, file_info *files, int file_count, widths_t *widths, options_t *options)
 {
-    int max_idx = line_length / MIN_COLUMN_WIDTH - 1;
+    int max_idx = widths->window_width / MIN_COLUMN_WIDTH - 1;
     int max_cols = (max_idx < file_count) ? max_idx : file_count;
+    int inode = (options->show_inode) ? widths->inode_width : 0;
 
     for (int file_idx = 0; file_idx < file_count; ++file_idx)
     {
@@ -190,10 +191,13 @@ static int get_column_count(column_info *column_configs, file_info *files, int f
             int col = file_idx / rows;
 
             int name_width = strlen(files[file_idx].name);
-            if (quotes)
+
+            if (options->inside_quotes)
                 name_width += 2;
 
-            if (ind && files[file_idx].indicator)
+            if (options->append_file_indicators && files[file_idx].indicator)
+                name_width += 1;
+            else if (options->append_file_indicators && files[file_idx].permission[0] == 'd')
                 name_width += 1;
 
             // Check if the file name width exceeds the current column width
@@ -204,7 +208,7 @@ static int get_column_count(column_info *column_configs, file_info *files, int f
             }
 
             // Consider spaces as well
-            if (column_configs[config_idx].line_len + (2 * config_idx) > line_length)
+            if (column_configs[config_idx].line_len + (2 * config_idx) + (inode * (config_idx + 1)) > widths->window_width)
                 column_configs[config_idx].valid = 0;
         }
     }
@@ -222,7 +226,7 @@ print_tabular(file_info *files, int file_count, options_t *options, widths_t *wi
 {
     column_info column_configs[256] = {[0 ... 255] = {1, 0, 0, 0}};
 
-    int ncols = get_column_count(column_configs, files, file_count, widths->window_width, options->inside_quotes, options->append_file_indicators);
+    int ncols = get_column_count(column_configs, files, file_count, widths, options);
     int nrows = (file_count + ncols - 1) / ncols;
 
     for (int i = 0; i < nrows; i++)
@@ -230,6 +234,9 @@ print_tabular(file_info *files, int file_count, options_t *options, widths_t *wi
         for (int j = 0; j < ncols; j++)
         {
             int file_idx = i + j * nrows;
+
+            if (options->show_inode)
+                printf("%*d ", widths->inode_width, files[file_idx].st_ino);
 
             print_padded_name(files[file_idx], options, column_configs[ncols - 1].max_len[j]);
             if (j < ncols - 1)

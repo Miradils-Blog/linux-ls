@@ -12,9 +12,6 @@
 #include <sys/ioctl.h>
 #include <sys/sysmacros.h>
 
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-#define NUM_LEN(n) (snprintf(0, 0, "%+d", (n)) - 1)
-
 #define CURR_DIR "."
 #define PREV_DIR ".."
 

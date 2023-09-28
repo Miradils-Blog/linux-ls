@@ -24,27 +24,27 @@ static int cmp_alphabetical_ext_asc(const void *a, const void *b)
 }
 static int cmp_alphabetical_ext_desc(const void *a, const void *b) { return -cmp_alphabetical_ext_asc(a, b); }
 
-static int cmp_atime_asc(const void *a, const void *b)
+static int cmp_atime_desc(const void *a, const void *b)
 {
-    return ((file_info *)b)->st_atime - ((file_info *)a)->st_atime;
+    return (((file_info *)b)->st_atime - ((file_info *)a)->st_atime) ?: cmp_alphabetical_asc(a, b);
 }
-static int cmp_atime_desc(const void *a, const void *b) { return -cmp_atime_asc(a, b); }
+static int cmp_atime_asc(const void *a, const void *b) { return -cmp_atime_asc(a, b); }
 
-static int cmp_ctime_asc(const void *a, const void *b)
+static int cmp_ctime_desc(const void *a, const void *b)
 {
-    return ((file_info *)b)->st_ctime - ((file_info *)a)->st_ctime;
+    return (((file_info *)b)->st_ctime - ((file_info *)a)->st_ctime) ?: cmp_alphabetical_asc(a, b);
 }
-static int cmp_ctime_desc(const void *a, const void *b) { return -cmp_ctime_asc(a, b); }
+static int cmp_ctime_asc(const void *a, const void *b) { return -cmp_ctime_asc(a, b); }
 
-static int cmp_mtime_asc(const void *a, const void *b)
+static int cmp_mtime_desc(const void *a, const void *b)
 {
-    return ((file_info *)b)->st_mtime - ((file_info *)a)->st_mtime;
+    return (((file_info *)b)->st_mtime - ((file_info *)a)->st_mtime) ?: cmp_alphabetical_asc(a, b);
 }
-static int cmp_mtime_desc(const void *a, const void *b) { return -cmp_mtime_asc(a, b); }
+static int cmp_mtime_asc(const void *a, const void *b) { return -cmp_mtime_asc(a, b); }
 
 static int cmp_size_asc(const void *a, const void *b)
 {
-    return ((file_info *)b)->st_size - ((file_info *)a)->st_size;
+    return ((file_info *)a)->st_size - ((file_info *)b)->st_size;
 }
 static int cmp_size_desc(const void *a, const void *b) { return -cmp_size_asc(a, b); }
 
@@ -61,13 +61,13 @@ void sort(file_info *files, int count, options_t *options)
         cmp_func = (!options->reverse_sort) ? cmp_alphabetical_ext_asc : cmp_alphabetical_ext_desc;
         break;
     case BY_ACCESS_TIME:
-        cmp_func = (!options->reverse_sort) ? cmp_atime_asc : cmp_atime_desc;
+        cmp_func = (!options->reverse_sort) ? cmp_atime_desc : cmp_atime_asc;
         break;
     case BY_CHANGE_TIME:
-        cmp_func = (!options->reverse_sort) ? cmp_ctime_asc : cmp_ctime_desc;
+        cmp_func = (!options->reverse_sort) ? cmp_ctime_desc : cmp_ctime_asc;
         break;
     case BY_MODIFICATION_TIME:
-        cmp_func = (!options->reverse_sort) ? cmp_mtime_asc : cmp_mtime_desc;
+        cmp_func = (!options->reverse_sort) ? cmp_mtime_desc : cmp_mtime_asc;
         break;
     case BY_SIZE:
         cmp_func = (!options->reverse_sort) ? cmp_size_asc : cmp_size_desc;

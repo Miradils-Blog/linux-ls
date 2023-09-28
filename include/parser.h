@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define NUM_LEN(n) (snprintf(0, 0, "%+d", (n)) - 1)
+
 typedef enum
 {
     TABULAR_FORMAT,         // -C (default)

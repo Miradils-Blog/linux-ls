@@ -1,8 +1,8 @@
 # linux-ls
-Rewriting Linux 'ls' command in C. 
+
+Rewriting Linux 'ls' command in C.
 
 The following flags are/will be supported:
-
 
 | Implemented                | flag    | description                                                                                                     |
 | -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
