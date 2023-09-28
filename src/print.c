@@ -224,7 +224,7 @@ static int get_column_count(column_info *column_configs, file_info *files, int f
 static void
 print_tabular(file_info *files, int file_count, options_t *options, widths_t *widths)
 {
-    column_info column_configs[256] = {[0 ... 255] = {1, 0, 0, 0}};
+    column_info column_configs[256] = {[0 ... 255] = {1, 0, 0}};
 
     int ncols = get_column_count(column_configs, files, file_count, widths, options);
     int nrows = (file_count + ncols - 1) / ncols;
